@@ -1,0 +1,5 @@
+include_rules
+
+: $(TOP)/node_modules/classnames/index.js $(TOP)/node_modules/mersennetwister/src/MersenneTwister.js $(TOP)/node_modules/react/dist/react-with-addons.js $(TOP)/node_modules/react-dom/dist/react-dom.js |> !join |> lib.js
+
+: $(TOP)/*.js |> !join |> app.js
