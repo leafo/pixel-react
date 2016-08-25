@@ -1,7 +1,7 @@
 
 class App extends React.Component {
   static start() {
-    ReactDOM.render(<App />, document.getElementById("page"));
+    ReactDOM.render(<App />, document.getElementById("page"))
   }
 
   render() {
