@@ -1,5 +1,6 @@
 
-let {PropTypes: types} = React
+const {PropTypes: types} = React
+const smoothstep = (t) => t*t*t*(t*(t*6 - 15) + 10)
 
 class App extends React.Component {
   static start() {
@@ -8,7 +9,9 @@ class App extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { }
+    this.state = {
+      hp: 0.75
+    }
   }
 
   render() {
@@ -78,8 +81,14 @@ class App extends React.Component {
 
     let buttons = []
 
-    for (let i = 1; i < 15; i++) {
-      buttons.push(<CanvasButton key={i}>X</CanvasButton>)
+    for (let i = 0; i < 5; i++) {
+
+
+      buttons.push(<CanvasButton
+        onClick={
+          ((i) => () => { this.setState({ hp: i/4 }) })(i)
+        }
+        key={i}>X</CanvasButton>)
     }
 
     return <HtmlCanvas width={250} height={250} scale={3}>
@@ -98,7 +107,7 @@ class App extends React.Component {
           {buttons}
         </div>
         <div className="frame" style={{ textAlign: "center" }}>
-          <CanvasBar p={0.75}>HP: 7/10</CanvasBar>
+          <CanvasBar p={this.state.hp}>HP: {Math.floor(this.state.hp * 10)}/10</CanvasBar>
         </div>
       </div>
     </HtmlCanvas>
@@ -174,7 +183,7 @@ class HtmlCanvas extends React.Component {
       className="html_canvas">
 
       <canvas ref="canvas"
-        style={{ 
+        style={{
           position: "absolute",
           top: "0",
           left: "0",
@@ -271,12 +280,48 @@ class CanvasBar extends CanvasElement {
     p: types.number.isRequired,
   }
 
+  componentWillReceiveProps(nextProps) {
+    let startP = this.props.p
+    let dp = Math.abs(nextProps.p - this.props.p)
+    let speed = 0.25
+
+    let lastFrame = performance.now();
+    let elapsed = 0
+
+    let frameUpdate = () => {
+      if (this.state.frameUpdate != frameUpdate) {
+        return // someone else took over
+      }
+
+      elapsed = elapsed + (performance.now() - lastFrame) / 1000
+
+      let animP = smoothstep(Math.min(1, elapsed * speed / dp))
+
+      this.setState({
+        displayP: startP + animP * (this.props.p - startP)
+      })
+
+      if (animP != 1) {
+        window.requestAnimationFrame(frameUpdate)
+      }
+    }
+
+    window.requestAnimationFrame(frameUpdate)
+
+    this.setState({
+      displayP: this.props.p,
+      frameUpdate: frameUpdate
+    })
+  }
+
   render() {
+    let p = this.state.frameUpdate ? this.state.displayP : this.props.p
+
     return <div className="canvas_bar">
       <div className="canvas_bar_label">{this.props.children}</div>
       <div className="canvas_bar_track">
         <div className="canvas_bar_inner" style={{
-          width: `${this.props.p * 100}%`
+          width: `${p * 100}%`
         }}></div>
       </div>
     </div>
