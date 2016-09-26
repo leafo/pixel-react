@@ -1,0 +1,24 @@
+
+
+@font-face {
+  font-family: "terminus";
+  src: url("fonts/terminus/TerminusTTF-4.39.ttf"); }
+
+@font-face {
+  font-family: "terminus";
+  font-weight: bold;
+  src: url("fonts/terminus/TerminusTTF-Bold-4.39.ttf"); }
+
+.html_canvas {
+    border: 2px solid red;
+    canvas {
+        image-rendering: optimizeSpeed;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: -o-crisp-edges;
+        image-rendering: pixelated;
+        -ms-interpolation-mode: nearest-neighbor;
+    }
+}
+
+
